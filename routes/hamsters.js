@@ -5,6 +5,7 @@ const router = express.Router()
 
 
 router.get('/', async (req, res) => {
+  console.log("enter router.get");
   const hamstersRef = db.collection('hamsters')
   const snapshot = await hamstersRef.get()
 
@@ -25,7 +26,7 @@ router.get('/', async (req, res) => {
 
 
 router.get('/random', async (req, res) => {
-  console.log("/random");
+  console.log("enter /random");
   const hamstersRef = db.collection('hamsters')
   const snapshot = await hamstersRef.get()
 
@@ -42,6 +43,7 @@ router.get('/random', async (req, res) => {
 })
 
 router.get('/:id', async (req, res) => {
+  console.log("enter get/:id");
   var searchid = req.params.id;
   console.log(searchid);
 
@@ -57,23 +59,27 @@ router.get('/:id', async (req, res) => {
       items.push( data )
     }
   })
+
   console.log(items);
+
   if (items == false) {
     console.log("404 logger");
     res.sendStatus(404)
   }
   else {
     res.send(items)
+    // res.sendStatus(200);
   }
 })
 
 router.post('/', async (req, res) => {
-  console.log("/post-page");
+  console.log("enter /post-page");
   console.log(req.body);
   const posthamsterobject = req.body;
 
       if(fullhamster(posthamsterobject) == true){
         console.log("reached the post point");
+
           const docRef = await db.collection('hamsters').add(posthamsterobject);
           res.send("id: " + docRef.id);
       }
@@ -86,13 +92,13 @@ router.post('/', async (req, res) => {
 })
 
 function fullhamster(hamob) {
-  console.log("the beginning of the function");
+  console.log("the beginning of the fullhamster function");
 
   if (hamob == {}) {
     console.log("first false");
     return false
   }
-  else if(((hamob.name) && (hamob.age) && (hamob.favFood) && (hamob.loves) && (hamob.imgName) && (hamob.wins || hamob.wins === 0) && (hamob.defeats || hamob.defeats === 0) && (hamob.games || hamob.games === 0)) == true)
+  else if( !hamob.name || !hamob.age || !hamob.favFood || !hamob.loves || !hamob.imgName || !hamob.wins || !hamob.defeats || !hamob.games )
   {
     console.log("second true");
     return true;
@@ -102,12 +108,12 @@ function fullhamster(hamob) {
     console.log("third false or hamob etc");
     return false
   }
-
+console.log("it never escaped the fullhamster function");
 }
-
+  // else if(((hamob.name) && (hamob.age) && (hamob.favFood) && (hamob.loves) && (hamob.imgName) && (hamob.wins || hamob.wins === 0) && (hamob.defeats || hamob.defeats === 0) && (hamob.games || hamob.games === 0)) == true)
 
 router.put('/:id', async (req, res) => {
-  console.log("/post-put");
+  console.log("enter /post-put");
   console.log(req.body);
   const bodycontent = req.body;
   var searchid = req.params.id;
@@ -116,22 +122,37 @@ router.put('/:id', async (req, res) => {
 
 const docRef = await db.collection('hamsters').doc(searchid).get()
 
-if (docRef == false) {
-   return res.sendStatus(404).send('bad hamster')
+if (!docRef.exists) {
+  console.log("inside the 404 if statement");
+   return res.sendStatus(404)
 }
-await db.collection('hamsters').doc(searchid).set(bodycontent, {merge: true})
-res.sendStatus(200)
+else if ((bodycontent && Object.keys(bodycontent).length === 0 && bodycontent.constructor === Object)) {
+  console.log("inside the 400 if statement");
+   return res.sendStatus(400)
+}
+else {
+  console.log("inside the status 200 else statement");
+  await db.collection('hamsters').doc(searchid).set(bodycontent, {merge: true})
+   return res.sendStatus(200)
+}
 
 })
 
 router.delete('/:id', async (req, res) =>{
+  console.log("enter delete:id");
   var searchid = req.params.id;
-
-  if (searchid == false) {
+  console.log(searchid);
+  const docRef = await db.collection('hamsters').doc(searchid).get();
+console.log(docRef);
+  if (!docRef.exists) {
     res.sendStatus(404);
+    return
   }
-  await db.collection('hamsters').doc(searchid).delete()
-    res.sendStatus(200);
+  else {
+    await db.collection('hamsters').doc(searchid).delete()
+      res.sendStatus(200);
+  }
+
 })
 
 
