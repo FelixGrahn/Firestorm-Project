@@ -6,9 +6,9 @@ let privatekey;
 if (process.env.PRIVATE_KEY) {
 	privatekey = JSON.parse(process.env.PRIVATE_KEY);
 }
-// else {
-// 	privatekey = require("./my-project-test-private-key.json");
-// }
+else {
+	privatekey = require("./my-project-test-private-key.json");
+}
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
