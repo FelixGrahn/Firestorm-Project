@@ -7,7 +7,6 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
-//const db = admin.Firestore()
 
 function getdatabase() {
   return admin.firestore()

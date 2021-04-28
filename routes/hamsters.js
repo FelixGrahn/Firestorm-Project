@@ -1,15 +1,10 @@
 const getdatabase = require('../database.js')
 const db = getdatabase()
-
-
 const express = require('express')
 const router = express.Router()
 
 
 router.get('/', async (req, res) => {
-  // console.log('/hamsters REST API');
-  // res.send('hamsters REST API')
-
   const hamstersRef = db.collection('hamsters')
   const snapshot = await hamstersRef.get()
 
@@ -29,16 +24,11 @@ router.get('/', async (req, res) => {
 })
 
 
-//random hamster
 router.get('/random', async (req, res) => {
   console.log("/random");
   const hamstersRef = db.collection('hamsters')
   const snapshot = await hamstersRef.get()
 
-  // if( snapshot.empty ) {
-  //   res.send([])
-  //   return
-  // }
 
   let items = []
   snapshot.forEach(doc => {
@@ -54,7 +44,6 @@ router.get('/random', async (req, res) => {
 router.get('/:id', async (req, res) => {
   var searchid = req.params.id;
   console.log(searchid);
-  // console.log("/id-page");
 
   const hamstersRef = db.collection('hamsters')
   const snapshot = await hamstersRef.get()
@@ -86,8 +75,7 @@ router.post('/', async (req, res) => {
       if(fullhamster(posthamsterobject) == true){
         console.log("reached the post point");
           const docRef = await db.collection('hamsters').add(posthamsterobject);
-          res.send(docRef.id);
-          // res.send("the end of the response")
+          res.send("id: " + docRef.id);
       }
       else {
         console.log("inside second if statement");
@@ -140,13 +128,11 @@ router.delete('/:id', async (req, res) =>{
   var searchid = req.params.id;
 
   if (searchid == false) {
-    res.sendStatus(400);
+    res.sendStatus(404);
   }
   await db.collection('hamsters').doc(searchid).delete()
     res.sendStatus(200);
 })
-
-
 
 
 
