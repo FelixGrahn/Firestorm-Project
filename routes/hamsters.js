@@ -57,6 +57,7 @@ router.get('/:id', async (req, res) => {
     if (doc.id == searchid) {
       console.log(doc.id + " is equal to " + searchid);
       items.push( data )
+      res.send(data)
     }
   })
 
@@ -65,10 +66,6 @@ router.get('/:id', async (req, res) => {
   if (items == false) {
     console.log("404 logger");
     res.sendStatus(404)
-  }
-  else {
-    res.send(items)
-    // res.sendStatus(200);
   }
 })
 
@@ -81,7 +78,7 @@ router.post('/', async (req, res) => {
         console.log("reached the post point");
 
           const docRef = await db.collection('hamsters').add(posthamsterobject);
-          res.send("id: " + docRef.id);
+          res.send({ id: docRef.id });
       }
       else {
         console.log("inside second if statement");
@@ -143,7 +140,6 @@ router.delete('/:id', async (req, res) =>{
   var searchid = req.params.id;
   console.log(searchid);
   const docRef = await db.collection('hamsters').doc(searchid).get();
-console.log(docRef);
   if (!docRef.exists) {
     res.sendStatus(404);
     return
